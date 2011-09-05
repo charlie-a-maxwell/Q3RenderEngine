@@ -1,0 +1,70 @@
+
+Vec3 RobotGame::Movement(Vec3 start, Vec3 velocity, float size, int depth)
+{
+
+	if (depth > 5)
+		return start;
+
+
+	Vec3 destinationPoint = start + velocity;
+	TraceOut out;
+
+	out = m_map->Trace(start, destinationPoint, 1, size); 
+
+	if (out.outputFraction == 1.0)
+		return destinationPoint;
+
+	Vec3 newBasePoint = start;
+
+	newBasePoint = newBasePoint + (start - destinationPoint) * out.outputFraction;
+	// normal to the collision plane
+	Vec3 planeNorm(out.outputPlane.normal[0], out.outputPlane.normal[1], out.outputPlane.normal[2]);
+	// this should be the closest point on the collision plane to the movement point
+	Vec3 planePos = newBasePoint - (newBasePoint.Dot(planeNorm) - out.outputPlane.dist) * planeNorm;
+
+	Vec3 slidePlaneOrigin = newBasePoint + ((newBasePoint - planePos)/(newBasePoint.Distance(planePos))) * size;
+	Vec3 slidePlaneNormal = (newBasePoint - planePos);
+	slidePlaneNormal.Normalize();
+
+	float d = slidePlaneNormal.x * (-slidePlaneOrigin.x) + slidePlaneNormal.y * (-slidePlaneOrigin.y) + slidePlaneNormal.z * (-slidePlaneOrigin.z);
+	Vec3 newDestinationPoint = destinationPoint - ((slidePlaneNormal.Dot(destinationPoint) - d) / (slidePlaneNormal.Dot(slidePlaneNormal))) * slidePlaneNormal;
+
+	Vec3 newVelocityVector = newDestinationPoint - slidePlaneOrigin;
+
+	/*
+	end = start + (end - start) * out.outputFraction;
+
+	if (out.outputFraction == 1.0)
+		return end;
+
+	// normal to the collision plane
+	Vec3 planeNorm(out.outputPlane.normal[0], out.outputPlane.normal[1], out.outputPlane.normal[2]);
+	// this should be the closest point on the collision plane to the movement point
+	Vec3 planePos = end - (end.Dot(planeNorm) - out.outputPlane.dist) * planeNorm;
+
+	// this is the vector from the center of the circle to the closest point on the colliding plane
+	// This will be the normal for the sliding plane.
+	Vec3 normal = (end - planePos);
+	normal.Normalize();
+
+	// This is the point of contact on the plane. It is just the point on the surface of the sphere that is 
+	// out the sphere's radius from the center in the direction of the plane normal.
+	Vec3 planeOrigin = end + (normal * size);
+
+	// This should be the distance from the destination to the sliding plane. 
+	float d = normal.Dot(planeOrigin);
+	float distance = normal.Dot(start + velocity) - d;
+
+	// This is the new destination along the sliding plane from the vector.
+	Vec3 newDes = (start + velocity) - distance * normal;
+	// This is the new velocity vector.
+	Vec3 newVec = newDes - planeOrigin;
+
+	/*Vec3 planeNormal(out.outputPlane.normal[0], out.outputPlane.normal[1], out.outputPlane.normal[2]);
+	double d = end.Dot(planeNormal) - (out.outputPlane.dist);
+	Vec3 v = end + (planeNormal * (-d + (size + EPSILON)));*/
+	if (newVelocityVector.Length() < EPSILON)
+		return newBasePoint;
+	else
+		return Movement(newBasePoint, newVelocityVector, size, ++depth);
+}
