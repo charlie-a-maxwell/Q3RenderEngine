@@ -12,17 +12,17 @@
 #include <map>
 #include <tchar.h>
 
-#if defined (_MSC_VER) && (_MSC_VER < 1300)
-	#include "types.h"
-#else
-	#ifdef _DEBUG
-		#undef _DEBUG
-		#include <atltypes.h>			
-		#define _DEBUG
-	#else
-		#include <atltypes.h>
-	#endif
-#endif
+//#if defined (_MSC_VER) && (_MSC_VER < 1300)
+//	#include "types.h"
+//#else
+//	#ifdef _DEBUG
+//		#undef _DEBUG
+//		#include <atltypes.h>			
+//		#define _DEBUG
+//	#else
+//		#include <atltypes.h>
+//	#endif
+//#endif
 
 // used for memory leak detection
 #if defined(_DEBUG)

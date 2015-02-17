@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="EngineFiles">
+      <UniqueIdentifier>{ad3ad820-07f6-4f71-b8a6-7daa59172023}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ResourceCache">
+      <UniqueIdentifier>{c49e1dab-b8d6-4737-a1e4-d04584620b08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Random">
+      <UniqueIdentifier>{3457520a-e3fe-4711-868d-eb22a4b03103}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EngineFiles\Actors.cpp">
+      <Filter>EngineFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>EngineFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineFiles\Game.cpp">
+      <Filter>EngineFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineFiles\Process.cpp">
+      <Filter>EngineFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineFiles\Q3FileParser.cpp">
+      <Filter>EngineFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineFiles\SceneNode.cpp">
+      <Filter>EngineFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineFiles\Sound.cpp">
+      <Filter>EngineFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceCache\ResCache2.cpp">
+      <Filter>ResourceCache</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceCache\ZipFile.cpp">
+      <Filter>ResourceCache</Filter>
+    </ClCompile>
+    <ClCompile Include="Random\CPUSpeed.cpp">
+      <Filter>Random</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry.cpp" />
+    <ClCompile Include="EngineFiles\StdHeader.cpp" />
+    <ClCompile Include="WINMAIN.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Actors.h">
+      <Filter>EngineFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>EngineFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineFiles\Game.h">
+      <Filter>EngineFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineFiles\Process.h">
+      <Filter>EngineFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineFiles\Q3FileParser.h">
+      <Filter>EngineFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineFiles\SceneNode.h">
+      <Filter>EngineFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineFiles\Sound.h">
+      <Filter>EngineFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceCache\ResCache2.h">
+      <Filter>ResourceCache</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceCache\ZipFile.h">
+      <Filter>ResourceCache</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry.h" />
+    <ClInclude Include="Interfaces.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="StdHeader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon1.ico" />
+    <None Include="icon2.ico" />
+  </ItemGroup>
+</Project>

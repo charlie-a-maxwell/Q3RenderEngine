@@ -598,27 +598,33 @@ float Dist2d(Vec3 a, Vec3 b)
 Vec3 Q3Game::Move(Vec3 start, Vec3 end, float size)
 {
 	TraceOut out;
-	// If there is no movement, there is no point to do the trace, just do the translation.
-	Vec3 outV = start;
-	bool solid = true;
 
-	for (int i = 0; i < 5; i++)
+	Vec3 outV;
+	while (start.SqDistance(end) > 0.1f)
 	{
 		out = m_map->Trace(start, end, 1, size);
 
-		if (out.outputFraction > 0)
+		outV = out.outputEnd;
+		if (out.outputFraction != 1.0)
+		{
+			Vec3 dir = end-start;
+			dir.Normalize();
+
+			Vec3 planeNormal(-out.outputPlane.normal[0], -out.outputPlane.normal[1], -out.outputPlane.normal[2]);
+			Vec3 invNormal = planeNormal * -1;
+
+			Vec3 proj = (dir.Dot(invNormal) / invNormal.Dot(invNormal)) * invNormal;
+
+			Vec3 wallDir = dir - proj;
+
+			end = outV + wallDir * (start.Distance(end) * (1-out.outputFraction));
+			start = outV;
+		}
+		else
 		{
 			break;
 		}
-
-		Vec3 planeNormal(out.outputPlane.normal[0], out.outputPlane.normal[1], out.outputPlane.normal[2]);
-		double d = end.Dot(planeNormal) - (out.outputPlane.dist);
-		end = end + (planeNormal * (-d + (size + EPSILON)));
 	}
-
-	outV = outV + (end - outV) * out.outputFraction;
-
-	solid = out.outputAllSolid;
 
 	return outV;
 }
@@ -629,21 +635,17 @@ void Q3Game::AttemptActorMove(ActorId id, Mat4x4 m, float deltaMS)
 	shared_ptr<IActor> actor = GetActor(id);
 	if (actor)
 	{
-		Vec3 start = actor->VGet()->m_Mat.GetPosition();
-		Vec3 end = m.GetPosition();
-
-		Vec3 movement = Move(start, end, size);
-		
-		Vec3 step = Move(start-g_Up*30,m.GetPosition()-g_Up*30, size);
-		Vec3 step2 = Move(step, step+g_Up*30, size);
-
-		if (Dist2d(start, step2) > Dist2d(start, movement))
-			movement = step2;
-
-		movement = Move(movement, movement+g_Up * (300.0 * (deltaMS/1000)), size);
-
 		Mat4x4 mat = m;
-		mat.SetPosition(movement);
+		if (actor->VGet()->m_Mat.GetPosition() != m.GetPosition())
+		{
+			Vec3 start = actor->VGet()->m_Mat.GetPosition();
+			Vec3 end = m.GetPosition()+g_Up*10;
+
+			Vec3 stepMove = Move(start, end, size);
+
+			mat.SetPosition(stepMove);
+		}
+
 		safeTriggerEvent(Evt_Move_Actor(id, mat));
 	}
 }
@@ -1055,7 +1057,7 @@ HumanInterfaceController::HumanInterfaceController(shared_ptr<SceneNode> object,
 	m_fTargetYaw = m_fYaw = RADIANS_TO_DEGREES(-initialYaw);
 	m_fTargetPitch = m_fPitch = RADIANS_TO_DEGREES(initialPitch);
 
-	m_maxSpeed = 300.0f;			// 30 meters per second
+	m_maxSpeed = 300.f;			// 1 meters per second
 	m_currentSpeed = 0.0f;
 
 	Vec3 pos = m_matToWorld.GetPosition();
@@ -1138,19 +1140,12 @@ void HumanInterfaceController::OnUpdate(int deltaMS)
 		// yaw and pitch.
 		Mat4x4 matRot, matYaw, matPitch;
 		matRot.BuildRotationX(D3DX_PI/2);
-		//matRot.BuildYawPitchRoll(DEGREES_TO_RADIANS(m_fYaw), DEGREES_TO_RADIANS(m_fPitch),0);
 		matYaw.BuildYawPitchRoll(DEGREES_TO_RADIANS(-m_fYaw), 0,0);
 		matPitch.BuildYawPitchRoll(0, DEGREES_TO_RADIANS(m_fPitch),0);
 		matRot = matPitch * matYaw * matRot;
 
-		//matRot = CalcViewMatrix(DEGREES_TO_RADIANS(-m_fYaw), DEGREES_TO_RADIANS(m_fPitch));
-		// Create the new object-to-world matrix, and the
-		// new world-to-object matrix. 
-
 		m_matToWorld = matRot * m_matPosition;
 		m_matFromWorld = m_matToWorld.Inverse(); 
-		//m_object->VSetTransform(&m_matToWorld, &m_matFromWorld);
-		safeTriggerEvent(Evt_Try_Move_Actor(m_object->VGet()->ActorId(), m_matToWorld, deltaMS));
 	}
 
 	if (bTranslating)
@@ -1167,21 +1162,21 @@ void HumanInterfaceController::OnUpdate(int deltaMS)
 			m_currentSpeed = m_maxSpeed;
 
 		direction *= m_maxSpeed * elapsedTime;
-		Vec3 up = upWorld*400*  (elapsedTime);
-		direction = direction + up;
+	/*	Vec3 up = upWorld*400*  (elapsedTime);
+		direction = direction + up;*/
 
 		Vec3 pos = m_matPosition.GetPosition() + direction;
 		m_matPosition.SetPosition(pos);
 		m_matToWorld.SetPosition(pos);
 
 		m_matFromWorld = m_matToWorld.Inverse();
-		//m_object->VSetTransform(&m_matToWorld, &m_matFromWorld);
-		safeTriggerEvent(Evt_Try_Move_Actor(m_object->VGet()->ActorId(), m_matToWorld, deltaMS));
 	}
 	else
 	{
 		m_currentSpeed = 0.0f;
 	}
+
+	safeTriggerEvent(Evt_Try_Move_Actor(m_object->VGet()->ActorId(), m_matToWorld, deltaMS));
 }
 
 Mat4x4 HumanInterfaceController::CalcViewMatrix(float yaw, float pitch)

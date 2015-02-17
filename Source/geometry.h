@@ -489,3 +489,50 @@ inline Vec3 HandleAccel(Vec3 &pos, Vec3 &vel, Vec3 &accel, float time)
 	pos += vel * time;
 }
 
+class CPoint
+{
+public:
+	CPoint()
+		: x(0)
+		, y(0)
+	{}
+
+	CPoint(int _x, int _y)
+		: x(_x)
+		, y(_y)
+	{}
+
+	CPoint const & operator=(POINT const & p)
+	{
+		x = p.x;
+		y = p.y;
+		return *this;
+	}
+
+	bool operator==(CPoint const & other)
+	{
+		return x == other.x && y == other.y;
+	}
+
+	bool operator!=(CPoint const & other)
+	{
+		return !operator==(other);
+	}
+
+	int x, y;
+};
+
+class CRect
+{
+public:
+	CRect()
+		: left(0)
+		, top(0)
+		, right(0)
+		, bottom(0)
+	{
+	}
+
+	int left, top, right, bottom;
+};
+

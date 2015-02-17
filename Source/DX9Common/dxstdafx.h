@@ -106,7 +106,7 @@
 #include "DXUTmesh.h"
 #include "DXUTgui.h"
 #include "DXUTsettingsDlg.h"
-#include "DXUTSound.h"
+//#include "DXUTSound.h"
 
 #if defined(DEBUG) | defined(_DEBUG)
 #ifndef V
