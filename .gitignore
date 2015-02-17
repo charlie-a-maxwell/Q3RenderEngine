@@ -1,4 +1,7 @@
 
+*.ipch
+*.ncb
+*.sdf
 /Source/ipch
 /Source/Release
 /Release
